@@ -1,25 +1,52 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+interface Props {
+    httpClient: HttpClient
+}
+
+
+interface State {
+    data: string[]
+}
+
+class App extends Component<Props, State> {
+
+  httpClient: HttpClient;
+
+  constructor(props: Props) {
+    super(props);
+    this.httpClient = props.httpClient;
+
+    this.state = {
+      data: []
+    }
+  }
+
+  getData = () => {
+      this.httpClient.get<string[]>('/data')
+          .then((response) => {
+              this.setState({
+                  data: response
+              })
+          })
+  }
+
+  componentDidMount() {
+    this.getData()
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+          <div className="data">
+              {this.state.data.map((item, i) => (
+                  <div key={i} className="data-item">{item}</div>
+              )}
+            </div>
+          <button className="data-button" onClick={this.getData}>
+              get new data
+          </button>
       </div>
     );
   }
